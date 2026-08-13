@@ -1,0 +1,72 @@
+---
+---
+
+<button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
+  <span class="icon-sun">☀️ Light</span>
+  <span class="icon-moon">🌙 Dark</span>
+</button>
+
+<style>
+  .theme-btn {
+    font-family: var(--font-code);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard-sm);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .theme-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px var(--color-black);
+  }
+
+  .theme-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px var(--color-black);
+  }
+
+  /* Show/hide icons depending on active theme */
+  .icon-moon { display: none; }
+  .icon-sun { display: inline; }
+
+  :global([data-theme="dark"]) .icon-sun { display: none; }
+  :global([data-theme="dark"]) .icon-moon { display: inline; }
+</style>
+
+<script>
+  function setupThemeToggle() {
+    const toggleBtn = document.getElementById('theme-toggle');
+    
+    // Check saved theme or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+
+    // Handle button click
+    toggleBtn?.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+  }
+
+  // Runs on initial load and page transitions (Astro View Transitions support)
+  setupThemeToggle();
+  document.addEventListener('astro:after-swap', setupThemeToggle);
+</script>
