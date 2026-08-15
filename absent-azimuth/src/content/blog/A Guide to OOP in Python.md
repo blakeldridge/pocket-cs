@@ -2,7 +2,9 @@
 title: 'OOP in Python'
 description: 'An comprehensive guide to coding Object Oriented Programming in Python'
 pubDate: 'Aug 13 2026'
-heroImage: '../../assets/blog-placeholder-3.jpg'
+board: 'all'
+level: 'a-level'
+learningTime: '30 min'
 ---
 
 ### Creating a Class
