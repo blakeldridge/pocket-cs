@@ -1,47 +1,46 @@
 ---
+import { getCollection } from 'astro:content';
+import FormattedDate from './FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+).slice(0, 2);
+
+const BOARDS = {
+  'all': 'All Boards',
+  'aqa': 'AQA',
+  'ocr-a': 'OCR A',
+  'edexcel': 'Edexcel',
+  'cie': 'CIE',
+};
+
+const LEVELS = {
+  'all': 'All Levels',
+  'a-level': 'A-Level',
+  'gcse': 'GCSE',
+};
 ---
 
 <div class="grid">
 
-    <!-- Card 1 -->
-    <div class="card">
-    <div>
-        <span class="card-tag tag-alevel">A-Level OCR</span>
-        <h3>Understanding Dijkstra's Shortest Path Algorithm</h3>
-        <p>Step-by-step trace tables and pseudocode tailored for Paper 1 algorithms.</p>
-    </div>
-    <div class="card-footer">
-        <span>📅 Aug 13, 2026</span>
-        <span>⏱️ 5 min read</span>
-    </div>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="card">
-    <div>
-        <span class="card-tag tag-gcse">GCSE AQA</span>
-        <h3>Bitwise Operations & Two's Complement Made Easy</h3>
-        <p>How to handle binary subtraction and shifts without losing exam marks.</p>
-    </div>
-    <div class="card-footer">
-        <span>📅 Aug 10, 2026</span>
-        <span>⏱️ 4 min read</span>
-    </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="card">
-    <div>
-        <span class="card-tag tag-cheatsheet">Download Pack</span>
-        <h3>OCR A-Level Paper 1 Pseudocode Cheat Sheet</h3>
-        <p>Printable 2-page PDF reference sheet covering arrays, stacks, queues & trees.</p>
-    </div>
-    <div class="card-footer">
-        <span>📅 Aug 02, 2026</span>
-        <span>📦 PDF Download</span>
-    </div>
-    </div>
-
+    {posts.map((post) => (
+      <div class="card">
+        <div>
+            <div class="tag-group">
+              <span class={`card-tag tag-${post.data.level}`}>{LEVELS[post.data.level]}</span>
+              <span class={`card-tag tag-${post.data.board}`}>{BOARDS[post.data.board]}</span>
+            </div>
+            <a href={`/blog/${post.id}/`} class="post-title-link">
+              {post.data.title}
+            </a>
+            <p>{post.data.description}</p>
+        </div>
+        <div class="card-footer">
+            <span>📅 <FormattedDate date={post.data.pubDate} /></span>
+            <span>⏱️ {post.data.learningTime} read</span>
+        </div>
+      </div>
+    ))}
 </div>
 
 
@@ -63,6 +62,8 @@
       flex-direction: column;
       justify-content: space-between;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
+      position: relative;
     }
 
     .card:hover {
@@ -70,14 +71,76 @@
       box-shadow: var(--shadow-hard-lg);
     }
 
+    .post-title-link {
+      color: inherit;
+      text-decoration: none;
+      font-family: var(--font-heading, system-ui);
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .post-title-link::after {
+      content: '';
+      position: absolute;
+      inset: 0; /* Stretches to top:0, right:0, bottom:0, left:0 */
+      z-index: 1;
+    }
+
+    .card:hover .post-title-link {
+      text-decoration: underline;
+    }
+    
+    .card:hover .post-title {
+      text-decoration: underline;
+    }
+    
     .card-tag {
       align-self: flex-start;
       font-family: var(--font-heading);
       font-size: 0.8rem;
+      font-weight: 800;
       padding: 0.2rem 0.6rem;
       border: var(--border-thick);
       border-radius: var(--radius-pill);
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .tag-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .tag-gcse { 
+      background: var(--accent-lime, #b1f100); 
+      color: #000; 
+    }
+    .tag-a-level { 
+      background: var(--accent-purple, #a855f7); 
+      color: #fff; 
+    }
+
+    .tag-aqa { 
+      background: var(--accent-blue, #60a5fa); 
+      color: #000; 
+    }
+    .tag-ocr-a { 
+      background: var(--accent-pink, #ff71ce); 
+      color: #000; 
+    }
+    .tag-edexcel { 
+      background: var(--accent-yellow, #facc15); 
+      color: #000; 
+    }
+    .tag-cie { 
+      background: #38bdf8; 
+      color: #000; 
+    }
+
+    .tag-all { 
+      background: #e2e8f0; 
+      color: #000; 
     }
 
     .tag-gcse { background: var(--accent-lime); }
